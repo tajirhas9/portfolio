@@ -1,0 +1,87 @@
+---
+import '../styles/global.css';
+import LinkedInIcon from './LinkedInIcon.astro';
+import MatrixIcon from './MatrixIcon.astro';
+import ThemeIcon from './ThemeIcon.astro';
+import GithubIcon from './GithubIcon.astro';
+---
+
+<div id="navbar">
+    <nav>
+        <ul id="left-nav">
+            <li><a href="/" style="padding: 0px 20px;">~</a></li>
+            <li><a href="/blogs">./blogs</a></li>
+            <li><a href="/resume">./resume</a></li>
+        </ul>
+        <ul id="right-nav">
+            <li><a href="mailto:tajircuet@gmail.com"><img src="/img/email-icon.svg" style="width:24px; height: 24px;"/></a></li>
+            <li><a href="https://github.com/tajirhas9" rel="me" target="_blank"><GithubIcon/></a></li>
+            <li><a href="https://linkedin.com/in/tajirhas9" rel="me" target="_blank"><LinkedInIcon/></a></li>
+            <li><a href="https://matrix.to/#/@tajirhas9:tajirhasnain.com" rel="me" target="_blank"><MatrixIcon/></a></li>
+            <!-- <li><ThemeIcon/></li> -->
+        </ul>
+    </nav>
+</div>
+
+<style>
+    #navbar {
+        color: var(--text-color);
+        font-family: 'UbuntuMonoLocal';
+        width: 90vw;
+    }
+
+    #navbar nav {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #navbar nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    #navbar nav ul#left-nav {
+        display: flex;
+        flex-direction: row;
+    }
+    #navbar nav ul#right-nav {
+        display: flex;
+        flex-direction: row;
+    }
+
+    #navbar nav ul li {
+        margin-right: 20px;
+        padding: 10px 10px 10px 10px;
+        vertical-align: middle;
+        cursor: pointer;
+    }
+
+    #navbar nav ul li:hover {
+        background-color: var(--hover-background-color, #f0f0f0);
+    }
+
+    #navbar nav ul li a {
+        color: var(--text-color);
+        text-decoration: none;
+    }
+
+    #navbar nav ul li a:hover {
+        text-decoration: underline;
+    }
+
+    @media screen and (max-width: 60em) {
+        #navbar nav ul#left-nav {
+            align-items: center;
+        }
+        #navbar nav ul#right-nav {
+            align-items: center;
+        }
+        #navbar nav ul li {
+            margin-right: 0;
+            margin-bottom: 10px;
+        }
+    }
+</style>

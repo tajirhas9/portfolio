@@ -1,0 +1,44 @@
+:root {
+    color-scheme: light;
+    --text-color: light-dark(#333, #ddd);
+    --blog-color: light-dark(#444, #ccc);;
+    --background-color: light-dark(#f9f9f9, #121212);
+}
+@font-face {
+  font-family: 'RobotoLocal';
+  src: url('/fonts/roboto.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'UbuntuMonoLocal';
+  src: url('/fonts/ubuntu-mono.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+    font-family: 'LibreCaslonLocal';
+    src: url('/fonts/libre-caslon.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+  font-family: 'BitterLocal';
+  src: url('/fonts/bitter.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+    font-family: 'RobotoLocal', sans-serif;
+}
+
+a {
+    color: var(--text-color);
+}
