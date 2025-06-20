@@ -3,60 +3,60 @@ import '../styles/global.css';
 import Layout from '../layouts/Layout.astro';
 import NavBar from  '../components/NavBar.astro';
 import {formatDate} from '../js/utils.js';
+import BlogList from '../components/BlogList.vue';
 
-const posts = Object.values(import.meta.glob('./blogs/*.{md,mdx}', { eager: true }))
+let posts = Object.values(import.meta.glob('./blogs/*.{md,mdx}', { eager: true }))
+const uniqueCategories = new Set(posts.map(post => post.frontmatter.category).filter(Boolean));
+let selectedCategory = null
 ---
 
 <Layout>
 <NavBar/>
-<div class="blog-list">
-        {posts.map(post => 
-        <div class="blog-item">
-            <a href={post.url} class="title">{post.frontmatter.title}</a>
-            <p class="date" class="date">{formatDate(post.frontmatter.date)}</p>
-            <p class="description" class="description">{post.frontmatter.description}</p>
-        </div>)}
-</div>
+<BlogList all-posts={posts}  client:load/>
+<!-- <div class="blog-list-container"> -->
+<!--     <div class="blog-category"> -->
+<!--         <p class="heading">Categories</p> -->
+<!--         <ul> -->
+<!--             {Array.from(uniqueCategories).map(category =>  -->
+<!--             <li>{category}</li> -->
+<!--             )} -->
+<!--         </ul> -->
+<!--     </div> -->
+<!--     <div class="blog-list"> -->
+<!--             {posts.map(post =>  -->
+<!--             <div class="blog-item"> -->
+<!--                 <a href={post.url} class="title">{post.frontmatter.title}</a> -->
+<!--                 <p class="date" class="date">{formatDate(post.frontmatter.date)}</p> -->
+<!--                 <p class="description" class="description">{post.frontmatter.description}</p> -->
+<!--             </div>)} -->
+<!--     </div> -->
+<!-- </div> -->
 </Layout>
 
-<style is:global>
+<script>
+    let selectedCategory = null;
+    let posts = Object.values(import.meta.glob(`./blogs/*.{md,mdx}`, { eager: true }));
+    function updateCategory(category) {
+        selectedCategory = category;
+        posts = Object.values(import.meta.glob(`./blogs/*.{md,mdx}`, { eager: true }))
+            .filter(post => post.frontmatter.category === selectedCategory);
+    }
+    document.querySelectorAll('.blog-category li').forEach(item => {
+        item.addEventListener('click', function() {
+            const category = this.textContent;
+            updateCategory(category);
+        });
+    });
+</script>
+
+<style>
     body {
         font-family: 'RobotoLocal', sans-serif;
     }
 
-    a {
-        color: var(--text-color);
-        text-decoration: none;
-    }
-    a:hover {
-        text-decoration: underline;
-    }
-    ul {
-        list-style: none;
-        padding: 0;
-        max-width: 45em;
-        margin: 0 auto;
-    }
 
-    .blog-item {
-        margin: 20px auto;
-        padding: 10px;
-        background-color: var(--background-color);
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        .title {
-            font-size: 1.2em;
-            color: var(--text-color);
-        }
-        .date {
-            font-size: 0.9em;
-            color: #999;
-        }
-        .description {
-            font-size: 0.9em;
-            color: #666;
-        }
-    }
+
+
 
     @media screen and (min-width: 40em) {
         .blog-list {
@@ -65,21 +65,5 @@ const posts = Object.values(import.meta.glob('./blogs/*.{md,mdx}', { eager: true
         }
     }
 
-    @media screen and (max-width: 60em) {
-        .blog-list {
-            margin: 0 auto;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
 
-        .blog-item {
-            align-self: center;
-            width: 80%;
-            padding: 10px;
-            margin: 10px auto;
-        }
-    }
 </style>
