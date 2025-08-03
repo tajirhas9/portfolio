@@ -1,0 +1,236 @@
+---
+layout: '../../layouts/BlogLayout.astro'
+title: "Setup IDE-like environment for Flutter in neovim (Windows included)"
+author: "Syed Tajir Hasnain"
+date: 2025-07-26
+description: "A step by step guide to setup IDE-like environment for Flutter in Neovim. The guide should work for Windows/Linux/MacOS"
+category: "Tech"
+---
+
+<img src="/img/flutter_nvim.png" style="margin: auto; display: block; object-fit: cover; max-width: 80vw;"/>
+
+# Motivation
+
+I have been using Neovim since 2022 as my primary coding editor, but since I work in frontend mostly for my office, setting up Neovim for JavaScript environment has not been that much of a challenge. Just installed the LSP servers with Mason and thats pretty much it. All the other configurations were mostly for customizing the editor. 
+
+But recently, I got involved into a Flutter project. Since I was using Flutter after almost like 4 years, so I did not want to take any risk at first and just wanted the project to get started. So, I was using Android Studio to write and debug the project, of course with IdeaVim plugin. But even after using IdeaVim, I was missing all the vim motions I was comfortable with in my vim editor. The development workflow was smooth with Android Studio, but writing code has become so dificult after using Neovim for so many years. It was not end of the world, but I was getting annoyed everytime I typed some vim motion unmindfully and it was not working. At first, I decided to configure IdeaVim keybindings to adjust with at least the important vim motions I need. But, it was just not enough.
+
+So, last weekend, I decided to put an  end to this misery and get my hands dirty to configure my neovim for flutter.
+
+# Research phase
+
+At first, I wanted to explore what options I have available for flutter in neovim. I checked if there is a stable LSP server or not. Got it in Mason. Cool! Then, I checked if there is a stable DAP support for dart and flutter or not. During this time, I came across this amazing plugin: [flutter-tools](https://github.com/nvim-flutter/flutter-tools.nvim). This plugin is everything you need to have an IDE like experience in neovim for flutter. It configures the LSP server for you. So, no need for Mason. On top of that, it also supports configuring your DAP adapter within the plugin. Although, it does not provide any DAP server, but guess what! You do not need it. Flutter SDK provides its own DAP server for both flutter and dart. So, if you have [nvim-dap](https://github.com/mfussenegger/nvim-dap) and [nvim-dap-ui (not necessarily)](https://github.com/rcarriga/nvim-dap-ui) configured, with only this plugin installed, you are good to go.
+
+# Configuration time
+
+After feeling confident enough, I decided to update my neovim configuration. It did not take much time to configure the flutter-tools plugin. The documentation is pretty self explanatory. You just add the following and the LSP already works. And I just added two custom keybindings for hot reload and restart since I am going to use them a lot.
+
+```lua
+    require("flutter-tools").setup {
+        flutter_path = <YOUR_FLUTTER_SDK_PATH>,
+        dev_log = {
+            enabled = false
+        },
+        dev_tools = {
+            autostart = true,
+            auto_openbrowser = true
+        }
+    }
+    vim.keymap.set('n', 'Fr', [[:FlutterReload<CR>]], {})
+    vim.keymap.set('n', 'FR', [[:FlutterRestart<CR>]], {})
+````
+
+## DAP configuration
+
+We are going to use the default debug adapters that come with Flutter SDK. You can run the Flutter debug adapter with the command: `flutter debug_adapter`. Similary, you can run the dart debug adapter with the command: `dart debug_adapter`. If you have Flutter SDK properly setup in your environment variable _([Go through this link for that](https://docs.flutter.dev/get-started/install/windows))_, the debug adapters should work without any issue.
+
+Since we are using executable from Flutter SDK for the DAP adapter, our neovim dap adapter should be of type `executable` and we just need to add the command in the dap configuration. The setup should look like this:
+
+```lua
+     -- dart DAP
+    dap.adapters.dart = {
+        type = 'executable',
+        command = 'dart', 
+        args = { 'debug_adapter' },
+        -- windows users will need to set 'detached' to false
+        options = {
+            detached = true,
+        }
+    }
+
+    -- Flutter DAP
+    dap.adapters.flutter = {
+        type = 'executable',
+        command = 'flutter',
+        args = { 'debug_adapter' },
+        -- windows users will need to set 'detached' to false
+        options = {
+            detached = true,
+        }
+    }
+````
+
+Now, for Windows users, the command `flutter` or `dart` directly will not work directly. Instead of them, you will need to provide the absolute path to `flutter.bat` file and `dart.exe` file in your SDK.
+So, to combine both windows and linux/macOS configuration together, it looks something similar to this:
+
+```lua
+
+    local is_windows = vim.loop.os_uname().sysname == "Windows_NT"
+    local FLUTTER_SDK_PATH = "<PATH_TO_FLUTTER_SDK>/bin/flutter"
+    local DART_SDK_PATH = "<PATH_TO_FLUTTER_SDK>/bin/cache/dart-sdk/bin/dart"
+    local FLUTTER_COMMAND = 'flutter'
+    local DART_COMMAND = 'dart'
+
+    if is_windows == true then
+        FLUTTER_SDK_PATH = "<PATH_TO_FLUTTER_SDK"
+        DART_SDK_PATH = "<PATH_TO_FLUTTER_SDK>/bin/cache/dart-sdk"
+        FLUTTER_COMMAND = '<PATH_TO_FLUTTER_SDK>/bin/flutter.bat'
+        DART_COMMAND = '<PATH_TO_FLUTTER_SDK>/bin/cache/dart-sdk/bin/dart.exe'
+    end
+
+    dap.adapters.dart = {
+        type = 'executable',
+        command = DART_COMMAND,
+        args = { 'debug_adapter' },
+        options = {
+            detached = is_windows == false,
+        }
+    }
+    dap.adapters.flutter = {
+        type = 'executable',
+        command = FLUTTER_COMMAND,
+        args = { 'debug_adapter' },
+        options = {
+            detached = is_windows == false,
+        }
+    }
+
+````
+
+We also need two DAP configurations: one for Flutter and another for Dart.
+
+```lua
+    dap.configurations.dart = {
+        {
+            type = "dart",
+            request = "launch",
+            name = "Launch dart",
+            dartSdkPath = DART_SDK_PATH,                  -- ensure this is correct
+            flutterSdkPath = FLUTTER_SDK_PATH,            -- ensure this is correct
+            program = "${workspaceFolder}/lib/main.dart", -- ensure this is correct
+            cwd = "${workspaceFolder}",
+        },
+        {
+            type = "flutter",
+            request = "launch",
+            name = "Launch flutter",
+            dartSdkPath = DART_SDK_PATH,                  -- ensure this is correct
+            flutterSdkPath = FLUTTER_SDK_PATH,            -- ensure this is correct
+            program = "${workspaceFolder}/lib/main.dart", -- ensure this is correct
+            cwd = "${workspaceFolder}",
+        }
+    }
+
+````
+
+# Put it all together
+
+`flutter-tools` provide a `register_configurations` property under `debugger` where you can put your flutter specific DAP configurations and adapter definitions. So, if we include our DAP configuration inside the plugin setup, the entire configuration looks something similar to this:
+
+
+```lua
+    local is_windows = vim.loop.os_uname().sysname == "Windows_NT"
+    local FLUTTER_SDK_PATH = "<PATH_TO_FLUTTER_SDK>/bin/flutter"
+    local DART_SDK_PATH = "<PATH_TO_FLUTTER_SDK>/bin/cache/dart-sdk/bin/dart"
+    local FLUTTER_COMMAND = 'flutter'
+    local DART_COMMAND = 'dart'
+
+    if is_windows == true then
+        FLUTTER_SDK_PATH = "<PATH_TO_FLUTTER_SDK"
+        DART_SDK_PATH = "<PATH_TO_FLUTTER_SDK>/bin/cache/dart-sdk"
+        FLUTTER_COMMAND = '<PATH_TO_FLUTTER_SDK>/bin/flutter.bat'
+        DART_COMMAND = '<PATH_TO_FLUTTER_SDK>/bin/cache/dart-sdk/bin/dart.exe'
+    end
+
+     require("flutter-tools").setup {
+        flutter_path = <YOUR_FLUTTER_SDK_PATH>,
+        dev_log = {
+            enabled = false
+        },
+        dev_tools = {
+            autostart = true,
+            auto_openbrowser = true
+        },
+        debugger = {
+            enabled = true,
+            register_configurations = function(_)
+                dap.adapters.dart = {
+                    type = 'executable',
+                    command = DART_COMMAND,
+                    args = { 'debug_adapter' },
+                    options = {
+                        detached = is_windows == false,
+                    }
+                }
+                dap.adapters.flutter = {
+                    type = 'executable',
+                    command = FLUTTER_COMMAND,
+                    args = { 'debug_adapter' },
+                    options = {
+                        detached = is_windows == false,
+                    }
+                }
+
+                dap.configurations.dart = {
+                    {
+                        type = "dart",
+                        request = "launch",
+                        name = "Launch dart",
+                        dartSdkPath = DART_SDK_PATH,
+                        flutterSdkPath = FLUTTER_SDK_PATH,
+                        program = "${workspaceFolder}/lib/main.dart", 
+                        cwd = "${workspaceFolder}",
+                    },
+                    {
+                        type = "flutter",
+                        request = "launch",
+                        name = "Launch flutter",
+                        dartSdkPath = DART_SDK_PATH,
+                        flutterSdkPath = FLUTTER_SDK_PATH,
+                        program = "${workspaceFolder}/lib/main.dart", 
+                        cwd = "${workspaceFolder}",
+                    }
+                }
+            end
+        }
+    }
+    vim.keymap.set('n', 'Fr', [[:FlutterReload<CR>]], {})
+    vim.keymap.set('n', 'FR', [[:FlutterRestart<CR>]], {})
+   
+```
+
+
+Now with a cool small dap-ui configuration like this, your flutter IDE experience is ready to enjoy in your favourite editor
+
+```lua
+    local dapui = require('dapui')
+    -- Open dapui automatically when a new debug session is created
+    dap.listeners.after.event_initialized["dapui_config"] = function()
+        dapui.open()
+    end
+    dap.listeners.before.event_terminated["dapui_config"] = function()
+        dapui.close()
+    end
+    dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close()
+    end
+````
+
+<script src="https://utteranc.es/client.js"
+        repo="tajirhas9/portfolio"
+        issue-number="3"
+        label="blog"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>
