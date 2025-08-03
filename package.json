@@ -12,7 +12,14 @@
     "@astrojs/mdx": "^4.3.0",
     "@astrojs/sitemap": "^3.4.1",
     "@astrojs/vue": "^5.1.0",
+    "@expressive-code/plugin-collapsible-sections": "^0.41.3",
+    "@expressive-code/plugin-line-numbers": "^0.41.3",
     "astro": "^5.9.2",
+    "astro-expressive-code": "^0.41.3",
     "vue": "^3.5.16"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "prettier-plugin-astro": "^0.14.1"
   }
 }

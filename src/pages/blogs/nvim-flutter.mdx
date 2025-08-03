@@ -25,7 +25,7 @@ At first, I wanted to explore what options I have available for flutter in neovi
 
 After feeling confident enough, I decided to update my neovim configuration. It did not take much time to configure the flutter-tools plugin. The documentation is pretty self explanatory. You just add the following and the LSP already works. And I just added two custom keybindings for hot reload and restart since I am going to use them a lot.
 
-```lua
+```lua wrap title="flutter-tools.lua"
     require("flutter-tools").setup {
         flutter_path = <YOUR_FLUTTER_SDK_PATH>,
         dev_log = {
@@ -46,11 +46,17 @@ We are going to use the default debug adapters that come with Flutter SDK. You c
 
 Since we are using executable from Flutter SDK for the DAP adapter, our neovim dap adapter should be of type `executable` and we just need to add the command in the dap configuration. The setup should look like this:
 
-```lua
+```lua title="flutter-tools.lua"
+
+    local FLUTTER_SDK_PATH = "<PATH_TO_FLUTTER_SDK>/bin/flutter"
+    local DART_SDK_PATH = "<PATH_TO_FLUTTER_SDK>/bin/cache/dart-sdk/bin/dart"
+    local FLUTTER_COMMAND = 'flutter'
+    local DART_COMMAND = 'dart'
+
      -- dart DAP
     dap.adapters.dart = {
         type = 'executable',
-        command = 'dart', 
+        command = DART_COMMAND,
         args = { 'debug_adapter' },
         -- windows users will need to set 'detached' to false
         options = {
@@ -61,7 +67,7 @@ Since we are using executable from Flutter SDK for the DAP adapter, our neovim d
     -- Flutter DAP
     dap.adapters.flutter = {
         type = 'executable',
-        command = 'flutter',
+        command = FLUTTER_COMMAND,
         args = { 'debug_adapter' },
         -- windows users will need to set 'detached' to false
         options = {
@@ -73,7 +79,7 @@ Since we are using executable from Flutter SDK for the DAP adapter, our neovim d
 Now, for Windows users, the command `flutter` or `dart` directly will not work directly. Instead of them, you will need to provide the absolute path to `flutter.bat` file and `dart.exe` file in your SDK.
 So, to combine both windows and linux/macOS configuration together, it looks something similar to this:
 
-```lua
+```lua title="flutter-tools.lua" ins={1} ins={7-12} {19} {27}
 
     local is_windows = vim.loop.os_uname().sysname == "Windows_NT"
     local FLUTTER_SDK_PATH = "<PATH_TO_FLUTTER_SDK>/bin/flutter"
@@ -82,7 +88,7 @@ So, to combine both windows and linux/macOS configuration together, it looks som
     local DART_COMMAND = 'dart'
 
     if is_windows == true then
-        FLUTTER_SDK_PATH = "<PATH_TO_FLUTTER_SDK"
+        FLUTTER_SDK_PATH = "<PATH_TO_FLUTTER_SDK>"
         DART_SDK_PATH = "<PATH_TO_FLUTTER_SDK>/bin/cache/dart-sdk"
         FLUTTER_COMMAND = '<PATH_TO_FLUTTER_SDK>/bin/flutter.bat'
         DART_COMMAND = '<PATH_TO_FLUTTER_SDK>/bin/cache/dart-sdk/bin/dart.exe'
@@ -109,7 +115,7 @@ So, to combine both windows and linux/macOS configuration together, it looks som
 
 We also need two DAP configurations: one for Flutter and another for Dart.
 
-```lua
+```lua title="flutter-tools.lua"
     dap.configurations.dart = {
         {
             type = "dart",
@@ -138,7 +144,7 @@ We also need two DAP configurations: one for Flutter and another for Dart.
 `flutter-tools` provide a `register_configurations` property under `debugger` where you can put your flutter specific DAP configurations and adapter definitions. So, if we include our DAP configuration inside the plugin setup, the entire configuration looks something similar to this:
 
 
-```lua
+```lua title="flutter-tools.lua"
     local is_windows = vim.loop.os_uname().sysname == "Windows_NT"
     local FLUTTER_SDK_PATH = "<PATH_TO_FLUTTER_SDK>/bin/flutter"
     local DART_SDK_PATH = "<PATH_TO_FLUTTER_SDK>/bin/cache/dart-sdk/bin/dart"

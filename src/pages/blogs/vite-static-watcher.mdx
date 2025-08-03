@@ -23,7 +23,7 @@ Since the static pages are not part of the vite watcher, everytime we made some 
 
 After going through the vite documentation and some trial and error, I found a way to support hot reload the the static pages. The solution was to make a vite plugin that would watch the static pages, if it detects any change in the static pages, it would override the default behaviour (which is full reload), and instead, the vite dev server would just send a websocket message to the client (core website) that a static file has changed. Then the client website would listen to this message and reload the iframe that contains the static page. This way, we were able to achieve hot reload for the static pages without reloading the entire website. The idea was simple. 
 
-```ts
+```ts title="custom-hot-reload.ts"
 
     import { ViteDevServer, type Plugin, type UserConfig } from 'vite'
     import * as fs from 'node:fs'
@@ -62,7 +62,7 @@ After going through the vite documentation and some trial and error, I found a w
 
 Now we can easily add this  plugin to our vite config.
 
-```ts
+```ts title="vite.config.ts"
 
     export default defineConfig({
         plugins: [

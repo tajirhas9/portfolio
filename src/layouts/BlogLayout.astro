@@ -1,48 +1,51 @@
 ---
-import '../styles/global.css';
-import NavBar from '../components/NavBar.astro';
-import {formatDate} from '../js/utils.js';
+import "../styles/global.css";
+import NavBar from "../components/NavBar.astro";
+import { formatDate } from "../js/utils.js";
 
 const { frontmatter } = Astro.props;
 const { title, description, date, category, author, image } = frontmatter;
-
-
-
-
 ---
+
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="author" content="Syed Tajir Hasnain" />
+        <meta name="title" content="${title}" />
+        <meta name="description" content="${description}" />
         <link rel="sitemap" href="/sitemap-index.xml" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-        <script defer src="https://analytics.tajirhasnain.com/script.js" data-website-id="f2db96fc-2552-4f2e-a893-490c29f2873d"></script>
-		<title>Hi! I am  Syed</title>
-	</head>
-	<body>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <script
+            defer
+            src="https://analytics.tajirhasnain.com/script.js"
+            data-website-id="f2db96fc-2552-4f2e-a893-490c29f2873d"></script>
+        <title>Hi! I am Syed</title>
+    </head>
+    <body>
         <NavBar />
         <div class="blog-header">
             <p>{title}</p>
             <p class="date">{formatDate(date)}</p>
         </div>
         <article>
-            <slot/>
+            <slot />
         </article>
-	</body>
+    </body>
 </html>
 
 <style>
     body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
+        margin: 0;
+        width: 100%;
+        height: 100%;
         left: 0;
         top: 0;
-	}
+    }
     .blog-header {
-        font-family: 'BitterLocal', serif;
+        font-family: "BitterLocal", serif;
         max-width: 50em;
         margin: 0 auto;
         p {
@@ -57,17 +60,17 @@ const { title, description, date, category, author, image } = frontmatter;
             margin-top: 0.5em;
         }
     }
-	article {
-		width: 100%;
-		height: 100%;
-        font-family: 'LibreCaslonLocal', sans-serif;
+    article {
+        width: 100%;
+        height: 100%;
+        font-family: "LibreCaslonLocal", sans-serif;
         color: var(--blog-color);
         max-width: 50em;
         margin: 0 auto;
         margin-bottom: 50px;
         font-size: 1em;
         line-height: 2.2;
-	}
+    }
     @media screen and (max-width: 60em) {
         .blog-header {
             max-width: 90%;
@@ -77,5 +80,4 @@ const { title, description, date, category, author, image } = frontmatter;
             max-width: 90%;
         }
     }
-
 </style>
