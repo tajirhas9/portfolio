@@ -12,9 +12,9 @@ const { title, description, date, category, author, image } = frontmatter;
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta name="author" content="Syed Tajir Hasnain" />
-        <meta name="title" content="${title}" />
-        <meta name="description" content="${description}" />
+        <meta name="author" content={author} />
+        <meta name="title" content={title} />
+        <meta name="description" content={description} />
         <link rel="sitemap" href="/sitemap-index.xml" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <meta name="generator" content={Astro.generator} />
