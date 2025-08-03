@@ -1,9 +1,9 @@
 ---
-import '../styles/global.css';
-import LinkedInIcon from './LinkedInIcon.astro';
-import MatrixIcon from './MatrixIcon.astro';
-import ThemeIcon from './ThemeIcon.astro';
-import GithubIcon from './GithubIcon.astro';
+import "../styles/global.css";
+import LinkedInIcon from "./LinkedInIcon.astro";
+import MatrixIcon from "./MatrixIcon.astro";
+import ThemeIcon from "./ThemeIcon.astro";
+import GithubIcon from "./GithubIcon.astro";
 ---
 
 <div id="navbar">
@@ -14,10 +14,30 @@ import GithubIcon from './GithubIcon.astro';
             <li><a href="/resume">./resume</a></li>
         </ul>
         <ul id="right-nav">
-            <li><a href="mailto:tajircuet@gmail.com"><img src="/img/email-icon.svg" style="width:24px; height: 24px;"/></a></li>
-            <li><a href="https://github.com/tajirhas9" rel="me" target="_blank"><GithubIcon/></a></li>
-            <li><a href="https://linkedin.com/in/tajirhas9" rel="me" target="_blank"><LinkedInIcon/></a></li>
-            <li><a href="https://matrix.to/#/@tajirhas9:tajirhasnain.com" rel="me" target="_blank"><MatrixIcon/></a></li>
+            <li>
+                <a href="mailto:tajircuet@gmail.com"
+                    ><img
+                        src="/img/email-icon.svg"
+                        alt="email-icon"
+                        style="width:24px; height: 24px;"
+                    /></a>
+            </li>
+            <li>
+                <a href="https://github.com/tajirhas9" rel="me" target="_blank"
+                    ><GithubIcon /></a>
+            </li>
+            <li>
+                <a
+                    href="https://linkedin.com/in/tajirhas9"
+                    rel="me"
+                    target="_blank"><LinkedInIcon /></a>
+            </li>
+            <li>
+                <a
+                    href="https://matrix.to/#/@tajirhas9:tajirhasnain.com"
+                    rel="me"
+                    target="_blank"><MatrixIcon /></a>
+            </li>
             <!-- <li><ThemeIcon/></li> -->
         </ul>
     </nav>
@@ -26,7 +46,7 @@ import GithubIcon from './GithubIcon.astro';
 <style>
     #navbar {
         color: var(--text-color);
-        font-family: 'UbuntuMonoLocal';
+        font-family: "UbuntuMonoLocal";
         width: 90vw;
     }
 
