@@ -1,0 +1,128 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import NavBar from "../../components/NavBar.astro";
+// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
+// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+---
+
+<Layout>
+    <NavBar />
+    <div id="heading" class="bn-lalon">
+        <p>সৈয়দ তাজির হাসনাইন</p>
+    </div>
+    <div id="sub-heading" class="bn">
+        <p>সফটওয়্যার ইঞ্জিনিয়ার</p>
+    </div>
+    <article class="bn">
+        <a id="avatar"
+            ><img
+                loading="lazy"
+                src="/img/profile.jpg"
+                alt="Syed Tajir Hasnain"
+            /></a
+        >
+       <p>
+       আসসালামু আলাইকুম! আমি  <a href="https://aixelink.com/" target="_blank">Aixelink Sàrl</a> এর একজন লিড সফটওয়ারে ইঞ্জিনিয়ার। আমি প্রায় ৪ বছর যাবত হেলথ কেয়ার আইটি তে কর্মরত আছি। আমি আমার ক্যারিয়ার শুরু করি ২০২০ সালে, যখন আমি চট্টগ্রাম প্রকৌশল ও প্রযুক্তি বিশ্ববিদ্যালয় (CUET)-এ তৃতীয় বর্ষের স্নাতক ছাত্র হিসেবে কম্পিউটার সায়েন্স অ্যান্ড ইঞ্জিনিয়ারিং বিভাগে অধ্যয়নরত ছিলাম। Aixelink Sàrl-এ আমি ফ্রন্টএন্ড টিম লিড (JavaScript) এবং মেডিকেল ডিভাইস ড্রাইভার ডেভেলপার (C#) হিসেবে কাজ করি। গত কয়েক বছর ধরে আমি বিভিন্ন ফ্রন্টএন্ড ওয়েব প্রযুক্তি এবং আইসিইউ ও অপারেটিং রুমের সিস্টেম ডেভেলপমেন্টে নিবিড়ভাবে কাজ করছি। আমি ক্রিটিকাল ফ্রন্টএন্ড সমস্যা সমাধান, কমপ্লেক্স ও অপ্টিমাইজড ওয়েব সলিউশান ডেভেলপমেন্ট এবং জাভাস্ক্রিপ্ট ভাষা ও রানটাইমে গভীরভাবে পারদর্শী। পেশাদারী ক্যারিয়ার শুরু করার আগে আমি প্রায় ৩ বছর কম্পিটিটিভ প্রোগ্রামার ছিলাম এবং ICPC 2019, <a href="https://codeforces.com/profile/tajirhas9" target="_blank">Codeforces</a> সহ অনেক অনলাইন ও অনসাইট কোডিং প্রতিযোগিতায় অংশগ্রহণ করেছি।
+       </p>
+        <hr style="margin-top: 50px;" />
+    </article>
+    <footer>
+        <p>
+            GPG Key ID: <a
+                href="https://keys.openpgp.org/vks/v1/by-fingerprint/19FB2F0C24B0C989C12613C5D1559C625F3B354C"
+                target="_blank"
+            >
+                D1559C625F3B354C
+            </a>&nbsp;
+            <span
+                style="font-size: 0.7em; font-style: italic;text-decoration: none;"
+                >(Fingerprint: 19FB2F0C24B0C989C12613C5D1559C625F3B354C)</span
+            >
+        </p>
+    </footer>
+</Layout>
+
+<style>
+    body {
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    p {
+        margin: 10px 0;
+    }
+
+    #heading {
+        text-align: center;
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #333;
+    }
+    #sub-heading {
+        text-align: center;
+        font-size: 1.2em;
+        color: #666;
+    }
+
+    #avatar {
+        display: block;
+        margin: 0 auto;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+    #avatar img {
+        object-fit: cover;
+        overflow: clip;
+        overflow-clip-margin: content-box;
+        width: 150px;
+        height: 150px;
+    }
+    article {
+        position: relative;
+        margin: 20px auto;
+        max-width: 600px;
+        padding: 20px;
+        hyphens: auto;
+        text-align: justify;
+        color: var(--text-color);
+        width: 90%;
+    }
+    footer {
+        text-align: center;
+        font-size: 0.8em;
+        color: #999;
+
+        a {
+            color: #999;
+        }
+    }
+
+    @media screen and (max-width: 80em) {
+        #avater {
+            position: static;
+            margin: 0 auto;
+            width: 120px;
+            height: 120px;
+        }
+        article {
+            padding: 15px;
+            margin: 0 auto;
+            width: 90%;
+            max-width: 600px;
+        }
+    }
+
+    @media screen and (min-width: 80em) {
+        article {
+            max-width: 38em;
+            margin: 0 auto;
+        }
+
+        #avatar {
+            position: absolute;
+            right: -18em;
+        }
+    }
+</style>

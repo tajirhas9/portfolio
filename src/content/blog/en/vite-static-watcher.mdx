@@ -1,0 +1,93 @@
+---
+layout: '../../../layouts/BlogLayout.astro'
+title: How I brought dynamism to static pages using Vite
+description: Use Vite to watch and update static pages dynamically
+tags:
+  - vite
+  - static pages
+  - watcher
+  - dynamic updates
+author: Syed Tajir Hasnain
+date: 2025-06-19
+language: "en"
+category: 
+- "Tech"
+---
+
+
+In my company, I am currently leading an interesting project, where the entire website is separated into two parts. First is the core website, we call it the framework. During production, we bundle this framework using Vite. But this core website only contains the layout, a vuex store for storing the data and handles all the network requests. The pages that are loaded in this website are all static pages, mostly forms, which are not part of the core website. These static pages are independent webpages that are just loaded into the core website with an iframe. Since, the requirement for these static pages change very frequently, it becomes very problematic if we keep this as part of the core website, since that would require us to rebuild the core website every time we change the static pages. So, we decided to keep these static pages separate and load them dynamically. The idea was very simple, we would just load these static pages in an iframe and the core website would handle all the network requests and data management. This was good in theory, but we faced a lot of challenges while developing those static pages. 
+
+### The challenge
+
+Since the static pages are not part of the vite watcher, everytime we made some change in any of the static pages, vite would reload the entire website. This was very tedious and time consuming, since we had to do this for every change we made in any static page and we were working with more than 100 static pages. It became more difficult, when the static page was not in the home route. Then, after any change in the static files, vite would reload the website, that went to the homepage, then we had to navigate all the way to the static page route to see the changes made. It was not a good developer experience at all. We were becoming very frustrated with this process and needed a solution to this problem.
+
+### The solution
+
+After going through the vite documentation and some trial and error, I found a way to support hot reload the the static pages. The solution was to make a vite plugin that would watch the static pages, if it detects any change in the static pages, it would override the default behaviour (which is full reload), and instead, the vite dev server would just send a websocket message to the client (core website) that a static file has changed. Then the client website would listen to this message and reload the iframe that contains the static page. This way, we were able to achieve hot reload for the static pages without reloading the entire website. The idea was simple. 
+
+```ts title="custom-hot-reload.ts"
+
+    import { ViteDevServer, type Plugin, type UserConfig } from 'vite'
+    import * as fs from 'node:fs'
+    import * as path from 'node:path'
+
+    const _path = process.platform === 'win32' ? path.win32 : path.posix
+
+    export async function customHotReload(filePathPattern: string, skipFullReload: boolean = false): Plugin {
+        return {
+            name: 'custom-hot-reload',
+            handleHotUpdate: async ({ file, server, modules }) => {
+                try {
+                    file = path.normalize(file)
+                    const staticDir = _path.join(__dirname, '..', 'static')
+                        // Check if the changed file is in the static folder or matches iframe pattern
+                    if (file.includes(staticDir)) {
+                        server.ws.send({
+                            type: 'custom',
+                            event: 'reload-iframe',
+                        })
+                        // Prevent full page reload
+                        return []
+                    }
+                    // Default HMR
+                    return modules
+                } catch (err) {
+                    console.error(err)
+                    return modules
+                }
+            },
+        }
+    }
+
+
+```
+
+Now we can easily add this  plugin to our vite config.
+
+```ts title="vite.config.ts"
+
+    export default defineConfig({
+        plugins: [
+            customHotReload('static\\/.*') 
+        ]
+    })
+
+```
+
+
+### The silver lining
+
+This plugin was a great success. It made the development process much smoother and faster. We were able to see the changes in the static pages instantly without having to reload the entire website. This improved our productivity and made the developer experience much better.
+
+However, while working on this, I realized something more. Now, that we had this plugin, what stops us from developing the static pages as separate projects with node.js and npm packages, and when the plugin detects any file change in the static project, we trigger build for that project first and then reload the iframe in the core website. This would allow us to use TypeScript, Vue/React, and other modern web technologies to develop the static pages. It took me some more trial and error, but finally when the final solution was ready, it just broke the boundaries of what we could do with static pages. We were able to develop the static pages with TypeScript support instead of vanilla JS. We could also use Vue/React and what not. This was a game changer for us. We were able to develop the static pages as separate projects and use modern web technologies to build them. The core website would load the static pages just like before, since after the build, the static pages were simple html websites. But now we had the power of modern web development at our disposal. 
+
+Initially, the build process made the static page update slower, since it went through an extra step to build and bundle the static page before reload, then I added concurrency support in the static pages' build process, so the static pages could be built in parallel processes, which made the build process much faster.
+
+<script src="https://utteranc.es/client.js"
+        repo="tajirhas9/portfolio"
+        issue-number="2"
+        label="blog"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>

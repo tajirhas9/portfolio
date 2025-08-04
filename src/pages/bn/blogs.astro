@@ -1,10 +1,10 @@
 ---
-import "../styles/global.css";
-import Layout from "../layouts/Layout.astro";
+import "../../styles/global.css";
+import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
-import NavBar from "../components/NavBar.astro";
-import BlogList from "../components/BlogList.vue";
-import {getLangFromUrl} from '../i18n/utils.ts';
+import NavBar from "../../components/NavBar.astro";
+import BlogList from "../../components/BlogList.vue";
+import {getLangFromUrl} from '../../i18n/utils.ts';
 
 const lang = getLangFromUrl(Astro.url);
 let posts = await getCollection("blog")

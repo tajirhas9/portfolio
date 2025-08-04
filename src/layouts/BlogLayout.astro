@@ -2,13 +2,16 @@
 import "../styles/global.css";
 import NavBar from "../components/NavBar.astro";
 import { formatDate } from "../js/utils.js";
+import { getLangFromUrl } from "../i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
 
 const { frontmatter } = Astro.props;
 const { title, description, date, category, author, image } = frontmatter;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -34,6 +37,13 @@ const { title, description, date, category, author, image } = frontmatter;
             <slot />
         </article>
     </body>
+<script type="text/javascript">
+        console.log(location.href)
+        if(location.href.includes('/bn/')) {
+            document.querySelector('.blog-header').classList.add('bn')
+            document.querySelector('article').classList.add('bn')
+        }
+    </script>
 </html>
 
 <style>

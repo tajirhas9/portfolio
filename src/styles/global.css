@@ -35,10 +35,35 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'HindSiliguriLocal';
+  src: url('/fonts/hind-siliguri.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LalonCustom';
+  src: url('/fonts/bn-lalon.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 body {
     font-family: 'RobotoLocal', sans-serif;
 }
 
 a {
     color: var(--text-color);
+}
+
+.bn-lalon {
+    font-family: 'LalonCustom' !important;
+}
+
+.bn {
+    font-family: 'HindSiliguriLocal' !important;
+    line-height: 2.2;
 }
