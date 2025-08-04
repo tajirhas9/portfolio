@@ -1,31 +1,41 @@
 ---
-import '../styles/global.css';
+import "../styles/global.css";
+import { getLangFromUrl } from "../i18n/utils";
+
+const lang = getLangFromUrl(Astro.url);
 ---
+
 <!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="author" content="Syed Tajir Hasnain"/>
-        <meta name="description" content="Portfolio and Blogging platform of Syed Tajir Hasnain" />
+<html lang={lang}>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="author" content="Syed Tajir Hasnain" />
+        <meta
+            name="description"
+            content="Portfolio and Blogging platform of Syed Tajir Hasnain"
+        />
         <link rel="sitemap" href="/sitemap-index.xml" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-        <script defer src="https://analytics.tajirhasnain.com/script.js" data-website-id="f2db96fc-2552-4f2e-a893-490c29f2873d"></script>
-		<title>Hi! I am  Syed</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <script
+            defer
+            src="https://analytics.tajirhasnain.com/script.js"
+            data-website-id="f2db96fc-2552-4f2e-a893-490c29f2873d"></script>
+        <title>Hi! I am Syed</title>
+    </head>
+    <body>
+        <slot />
+    </body>
 </html>
 
 <style>
-	html,
-	body {
-		margin: 0;
-		width: 100vw;
-		height: 100vh;
+    html,
+    body {
+        margin: 0;
+        width: 100vw;
+        height: 100vh;
         left: 0;
         top: 0;
-	}
+    }
 </style>

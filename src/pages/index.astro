@@ -1,29 +1,55 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import NavBar from  '../components/NavBar.astro';
+import Layout from "../layouts/Layout.astro";
+import NavBar from "../components/NavBar.astro";
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout>
-<NavBar/>
-<div id="heading"> 
-    <p>Syed Tajir Hasnain</p>
-</div>
+    <NavBar />
+    <div id="heading">
+        <p>Syed Tajir Hasnain</p>
+    </div>
     <div id="sub-heading">
         <p>Software Engineer</p>
     </div>
     <article>
         <a id="avatar"><img loading="lazy" src="/img/profile.webp" alt="Syed Tajir Hasnain"/></a>
         <p>
-        Hi there! I am a software engineer at <a href="https://aixelink.com/" target="_blank">Aixelink Sàrl</a>. I have been in healthcare IT for around 4 years now. I started my professional career as a software engineer back in 2020 when I was still a 3rd year undergrad student in Chittagong University of Engineering & Technology (CUET) majoring in Computer Science & Engineering. I work as the Frontend Team Lead (JavaScript) and Medical Device Driver developer (C#) for Aixelink Sàrl. I have been deeply invested in various frontend web technologies and developing systems for ICU and Operating Rooms for the last couple of years. My expertise lies mostly in solving critical frontend problems, developing and optimizing complex web solutions and core JavaScript language and runtime. Before starting my professional career, I was a competitive programmer for around 3 years and attended a lot of online and onsite coding competitions including ICPC 2019, <a href="https://codeforces.com/profile/tajirhas9" target="_blank">Codeforces</a> and so on.</p>
-        <hr style="margin-top: 50px;"/>
+            Hi there! I am a software engineer at <a
+                href="https://aixelink.com/"
+                target="_blank">Aixelink Sàrl</a
+            >. I have been in healthcare IT for around 4 years now. I started my
+            professional career as a software engineer back in 2020 when I was
+            still a 3rd year undergrad student in Chittagong University of
+            Engineering & Technology (CUET) majoring in Computer Science &
+            Engineering. I work as the Frontend Team Lead (JavaScript) and
+            Medical Device Driver developer (C#) for Aixelink Sàrl. I have been
+            deeply invested in various frontend web technologies and developing
+            systems for ICU and Operating Rooms for the last couple of years. My
+            expertise lies mostly in solving critical frontend problems,
+            developing and optimizing complex web solutions and core JavaScript
+            language and runtime. Before starting my professional career, I was
+            a competitive programmer for around 3 years and attended a lot of
+            online and onsite coding competitions including ICPC 2019, <a
+                href="https://codeforces.com/profile/tajirhas9"
+                target="_blank">Codeforces</a
+            > and so on.
+        </p>
+        <hr style="margin-top: 50px;" />
     </article>
     <footer>
-        <p>GPG Key ID: <a href="https://keys.openpgp.org/vks/v1/by-fingerprint/19FB2F0C24B0C989C12613C5D1559C625F3B354C" target="_blank">
-            D1559C625F3B354C 
-        </a>&nbsp;
-            <span style="font-size: 0.7em; font-style: italic;text-decoration: none;">(Fingerprint: 19FB2F0C24B0C989C12613C5D1559C625F3B354C)</span>
+        <p>
+            GPG Key ID: <a
+                href="https://keys.openpgp.org/vks/v1/by-fingerprint/19FB2F0C24B0C989C12613C5D1559C625F3B354C"
+                target="_blank"
+            >
+                D1559C625F3B354C
+            </a>&nbsp;
+            <span
+                style="font-size: 0.7em; font-style: italic;text-decoration: none;"
+                >(Fingerprint: 19FB2F0C24B0C989C12613C5D1559C625F3B354C)</span
+            >
         </p>
     </footer>
 </Layout>
@@ -107,8 +133,8 @@ import NavBar from  '../components/NavBar.astro';
         }
 
         #avatar {
-        position: absolute;
-        right: -18em;
+            position: absolute;
+            right: -18em;
         }
     }
 </style>

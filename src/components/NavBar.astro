@@ -4,14 +4,20 @@ import LinkedInIcon from "./LinkedInIcon.astro";
 import MatrixIcon from "./MatrixIcon.astro";
 import ThemeIcon from "./ThemeIcon.astro";
 import GithubIcon from "./GithubIcon.astro";
+import LanguagePicker from "./LanguagePicker.astro";
+import { getLangFromUrl, useTranslations, useTranslatedPath } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
 ---
 
 <div id="navbar">
     <nav>
         <ul id="left-nav">
-            <li><a href="/" style="padding: 0px 20px;">~</a></li>
-            <li><a href="/blogs">./blogs</a></li>
-            <li><a href="/resume">./resume</a></li>
+            <li><a href={translatePath('/')} style="padding: 0px 20px;">~</a></li>
+            <li><a href={translatePath('/blogs/')}>./blogs</a></li>
+            <li><a href={translatePath('/resume')}>./resume</a></li>
         </ul>
         <ul id="right-nav">
             <li>
@@ -20,24 +26,29 @@ import GithubIcon from "./GithubIcon.astro";
                         src="/img/email-icon.svg"
                         alt="email-icon"
                         style="width:24px; height: 24px;"
-                    /></a>
+                    /></a
+                >
             </li>
             <li>
                 <a href="https://github.com/tajirhas9" rel="me" target="_blank"
-                    ><GithubIcon /></a>
+                    ><GithubIcon /></a
+                >
             </li>
             <li>
                 <a
                     href="https://linkedin.com/in/tajirhas9"
                     rel="me"
-                    target="_blank"><LinkedInIcon /></a>
+                    target="_blank"><LinkedInIcon /></a
+                >
             </li>
             <li>
                 <a
                     href="https://matrix.to/#/@tajirhas9:tajirhasnain.com"
                     rel="me"
-                    target="_blank"><MatrixIcon /></a>
+                    target="_blank"><MatrixIcon /></a
+                >
             </li>
+            <li><LanguagePicker /></li>
             <!-- <li><ThemeIcon/></li> -->
         </ul>
     </nav>
