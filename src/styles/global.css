@@ -3,6 +3,7 @@
     --text-color: light-dark(#333, #ddd);
     --blog-color: light-dark(#444, #ccc);;
     --background-color: light-dark(#f9f9f9, #121212);
+    --border: light-dark(#ccc, #121212);
 }
 @font-face {
   font-family: 'RobotoLocal';
@@ -42,3 +43,24 @@ body {
 a {
     color: var(--text-color);
 }
+
+.bn-lalon {
+    font-family: 'LalonCustom' !important;
+}
+
+.bn {
+    font-family: 'HindSiliguriLocal' !important;
+    line-height: 2.2;
+}
+
+table {
+    margin: auto;
+    border-collapse: collapse;
+    border: 1px solid var(--border);
+    th,td {
+        padding: 5px;
+        border-collapse: collapse;
+        border: 1px solid var(--border);
+    }
+}
+
