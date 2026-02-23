@@ -37,9 +37,9 @@ Install the plugin with your preferred package manager
 {
     "tajirhas9/muslim.nvim",
     dependencies = {
-        "nvim-lua/plenary",
+        "nvim-lua/plenary.nvim",
         -- OPTIONAL
-        "nvim-lualine/lualine"
+        "nvim-lualine/lualine.nvim"
     }
 }
 ```
@@ -94,17 +94,27 @@ muslim.setup({
 ### `:PrayerTimes` sample return value
 
 ```lua
-{
-  asr = 1765791300000,
-  dhuhr = 1765777680000,
-  fajr = 1765753500000,
-  isha = 1765801560000,
-  maghrib = 1765797120000,
-  midnight = 1765820880000,
-  sunrise = 1765758240000,
-  sunset = 1765797060000
-}
+|-------------------------|
+| Waqt       | Time       |
+|-------------------------|
+| fajr       | 05:05 AM   |
+| sunrise    | 06:20 AM   |
+| dhuhr      | 12:06 PM   |
+| asr        | 04:15 PM   |
+| sunset     | 05:53 PM   |
+| maghrib    | 05:53 PM   |
+| isha       | 07:03 PM   |
+| midnight   | 12:06 AM   |
+|-------------------------|
 ```
+## 🧰 Utility functions
+
+| Function name | Description |
+| -- | -- |
+| `prayer_time`  | Returns a formatted text. Shows remaining time for current waqt (if valid) and start time of next waqt |
+| `today_prayer_time_epochs` | Returns a table with all the waqt time _(in epochs)_ for the day |
+
+These functions can be used to enhance the behavior of the plugin. For example, create a scheduler with `vim.schedule` and show the prayer time as a popup notification for certain warnings.
 
 ## 🧩 Integration with lualine
 
