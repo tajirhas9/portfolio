@@ -2,8 +2,13 @@
 import Layout from '../layouts/Layout.astro';
 import LinkedInIcon from '../components/LinkedInIcon.astro';
 import NavBar from  '../components/NavBar.astro';
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+
+let muslimNvimStars = null;
+try {
+    const res = await fetch('https://api.github.com/repos/tajirhas9/muslim.nvim');
+    const data = await res.json();
+    muslimNvimStars = data.stargazers_count;
+} catch (e) {}
 ---
 
 <Layout>
@@ -142,6 +147,41 @@ company’s enterprise solution. Mainly focusing on:
         </ul>
     </div>
     <div class="experience">
+        <p class="section-title">Open Source</p>
+        <ul>
+            <li class="experience-item">
+                <div class="experience-header">
+                    <ul class="company-info">
+                        <li class="company-name"><a href="https://github.com/tajirhas9/muslim.nvim" target="_blank">muslim.nvim</a>{muslimNvimStars !== null && <span class="stars">⭐ {muslimNvimStars}</span>}</li>
+                        <li class="company-title">Neovim Plugin · Lua</li>
+                    </ul>
+                    <p class="experience-period">
+                        <span>December, 2025</span>
+                    </p>
+                </div>
+                <div class="experience-details">
+                    <p>A Neovim plugin that calculates Muslim prayer times entirely offline using the Equation of Time and Sun Declination. Displays remaining time until the current waqt directly in the statusline via lualine integration. Supports multiple calculation methods (MWL, ISNA, Makkah, Karachi, etc.), Hanafi school adjustments, and higher latitude corrections.</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="experience">
+        <p class="section-title">Certification</p>
+        <ul>
+            <li class="experience-item">
+                <div class="experience-header">
+                    <ul class="company-info">
+                        <li class="company-name"><a href="https://www.coursera.org/account/accomplishments/specialization/certificate/9K5EP8P3E6QL" target="_blank">Deep Learning Specialization</a></li>
+                        <li class="company-title">Coursera</li>
+                    </ul>
+                    <p class="experience-period">
+                    <span>Issued: March, 2021</span>
+                    </p>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="experience">
         <p class="section-title">Achievements</p>
         <ul>
             <li class="experience-item">
@@ -174,22 +214,6 @@ company’s enterprise solution. Mainly focusing on:
                         <li class="company-name"><a href="https://toph.co/c/iut-ict-fest-2019/standings?start=24" target="_blank">25<sup>th</sup> position, Inter University Programming Competition</a></li>
                         <li class="company-title">IUT 10th ICT Fest Programming Contest, 2019</li>
                     </ul>
-                </div>
-            </li>
-        </ul>
-    </div>
-    <div class="experience">
-        <p class="section-title">Certification</p>
-        <ul>
-            <li class="experience-item">
-                <div class="experience-header">
-                    <ul class="company-info">
-                        <li class="company-name">Deep Learning Specialization</li>
-                        <li class="company-title">Coursera</li>
-                    </ul>
-                    <p class="experience-period">
-                    <span>Issued: March, 2021</span>
-                    </p>
                 </div>
             </li>
         </ul>
@@ -325,6 +349,11 @@ Rule Mining over video data.</p>
     .company-name {
         margin-top: 15px;
         font-size: 1.1em;
+        .stars {
+            font-size: 0.85em;
+            color: #666;
+            margin-left: 6px;
+        }
     }
     .company-title {
         font-size: 0.9em;
@@ -349,20 +378,32 @@ Rule Mining over video data.</p>
     }
 
     @media print {
-      body { padding: 0; }
+      body {
+          padding: 0;
+          overflow: visible;
+      }
+      nav {
+          display: none;
+      }
       .container {
           padding: 0;
-          margin-top: 0;
+          margin: 0 auto;
+          max-width: 100%;
           line-height: 1.4;
       }
       .experience {
           margin-top: 10px;
       }
       .experience-item {
-          margin-bottom: 0px;
+          margin-bottom: 0;
+          page-break-inside: avoid;
+          break-inside: avoid;
       }
       .experience-details {
           margin-top: 2px;
+          background-color: #f2f2f2;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
       }
       a {
           text-decoration: none;
