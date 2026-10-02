@@ -29,26 +29,39 @@ try {
             <span>Experience</span>
         </p>
         <ul>
-            <li class="experience-item">
+            <li class="experience-item experience-item--long">
                 <div class="experience-header">
                     <ul class="company-info">
                         <li class="company-name">Aixelink Sàrl</li>
                         <li class="company-title">Software Engineer</li>
+                        <li class="company-title">AI Engineer</li>
                     </ul>
                     <p class="experience-period">
                         <span>July, 2021 ~ Present</span>
                     </p>
                 </div>
                 <div class="experience-details">
-                    <p>Leading the Front-end team in developing highly complex web solutions for Critical Care environment of hospitals around the world. Working remotely with a cross-country team as a software engineer in the
-company’s enterprise solution. Mainly focusing on:</p>
+                    <p>Leading the company’s AI initiative and the Front-end team, developing highly complex web and AI-driven solutions for Critical Care environment of hospitals around the world. Working remotely with a cross-country team in the company’s enterprise solution. Mainly focusing on:</p>
     <ul>
+        <li>AI engineering: LLM-based assistance for healthcare professionals (Project Lead)</li>
         <li>JavaScript technologies for Web (Front-end Team Lead)</li>
         <li>.NET framework for hardware driver software development</li>
     </ul>
 <div>
     <p>Experience Highlights:</p>
     <ul>
+        <li>
+            Leading the design and development of an AI assistant for clinicians in critical care, owning it end to end from the AI backend to the clinician-facing interface.
+        </li>
+        <li>
+            Architected agentic AI workflows combining reasoning, tool use and clinician-in-the-loop review for a safety-critical domain.
+        </li>
+        <li>
+            Built a real-time streaming interface that surfaces the AI's progress and reasoning for clinicians to follow and review.
+        </li>
+        <li>
+            Established evaluation and automated testing practices to measure reliability and consistency of AI output.
+        </li>
         <li>
             Working as a team lead in an enterprise level software migration from WinForm solution
     to Web-based solution.
@@ -101,7 +114,19 @@ company’s enterprise solution. Mainly focusing on:</p>
             </li>
         </ul>
     </div>
-    <div style="break-after:page"></div>
+    <div class="experience">
+        <p class="section-title">Skills</p>
+        <ul>
+            <li class="experience-item">
+                <div class="skills-list">
+                    <span class="skill-category">AI / LLM</span><span class="skill-values">LangChain, LangGraph, Agentic &amp; Multi-agent Workflows, Tool Calling, RAG, Vector Databases, Human-in-the-loop, LLM Evaluation, Prompt Engineering, Self-hosted LLM Inference</span>
+                    <span class="skill-category">Frontend</span><span class="skill-values">JavaScript, TypeScript, Vue 3, Pinia, Tailwind CSS, D3.js, Streaming UIs (SSE, WebSocket)</span>
+                    <span class="skill-category">Backend</span><span class="skill-values">Python, FastAPI, Asyncio, Node.js, C# / .NET</span>
+                    <span class="skill-category">Tooling</span><span class="skill-values">Rust, Docker, Linux, Pytest, Vitest, Playwright, Git</span>
+                </div>
+            </li>
+        </ul>
+    </div>
     <div class="experience">
         <p class="section-title">Education</p>
         <ul>
@@ -366,6 +391,31 @@ Rule Mining over video data.</p>
             float: right;
         }
     }
+    .skills-list {
+        display: grid;
+        grid-template-columns: 6.5em 1fr;
+        gap: 6px 10px;
+        align-items: baseline;
+        padding-top: 30px;
+        .skill-category {
+            font-weight: 500;
+            color: #111;
+        }
+        .skill-values {
+            font-size: 0.85em;
+            color: #666;
+        }
+    }
+
+    @media screen and (max-width: 60em) {
+        .skills-list {
+            grid-template-columns: 1fr;
+            gap: 2px;
+            .skill-values {
+                margin-bottom: 8px;
+            }
+        }
+    }
     .experience-details {
         margin-top: 10px;
         font-size: 0.85em;
@@ -397,6 +447,24 @@ Rule Mining over video data.</p>
           page-break-inside: avoid;
           break-inside: avoid;
       }
+      .experience-item--long {
+          page-break-inside: auto;
+          break-inside: auto;
+      }
+      .section-title,
+      .experience-header:not(:last-child) {
+          page-break-after: avoid;
+          break-after: avoid;
+      }
+      .experience-details li,
+      .skills-list {
+          page-break-inside: avoid;
+          break-inside: avoid;
+      }
+      p {
+          orphans: 3;
+          widows: 3;
+      }
       .experience-details {
           margin-top: 2px;
           background-color: #f2f2f2;
@@ -409,7 +477,7 @@ Rule Mining over video data.</p>
     }
 
     @page {
-      size: auto;
+      size: A4;
       margin: 10mm 10mm;
     }
 </style>
