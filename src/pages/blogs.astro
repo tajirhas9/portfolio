@@ -2,12 +2,9 @@
 import '../styles/global.css';
 import Layout from '../layouts/Layout.astro';
 import NavBar from  '../components/NavBar.astro';
-import {formatDate} from '../js/utils.js';
 import BlogList from '../components/BlogList.vue';
 
 let posts = Object.values(import.meta.glob('./blogs/*.{md,mdx}', { eager: true }))
-const uniqueCategories = new Set(posts.map(post => post.frontmatter.category).filter(Boolean));
-let selectedCategory = null
 ---
 
 <Layout>
@@ -33,21 +30,6 @@ let selectedCategory = null
 <!-- </div> -->
 </Layout>
 
-<script>
-    let selectedCategory = null;
-    let posts = Object.values(import.meta.glob(`./blogs/*.{md,mdx}`, { eager: true }));
-    function updateCategory(category) {
-        selectedCategory = category;
-        posts = Object.values(import.meta.glob(`./blogs/*.{md,mdx}`, { eager: true }))
-            .filter(post => post.frontmatter.category === selectedCategory);
-    }
-    document.querySelectorAll('.blog-category li').forEach(item => {
-        item.addEventListener('click', function() {
-            const category = this.textContent;
-            updateCategory(category);
-        });
-    });
-</script>
 
 <style>
     body {

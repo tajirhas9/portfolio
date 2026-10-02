@@ -15,23 +15,13 @@ import { pluginLineNumbers } from '@expressive-code/plugin-line-numbers'
 export default defineConfig({
     site: "https://tajirhasnain.com", // Public URL without port
     base: "/",
+    compressHTML: true,
     integrations: [vue(), sitemap(), expressiveCode({
         plugins: [pluginCollapsibleSections(), pluginLineNumbers()],
         themes: ['one-dark-pro', 'solarized-light'],
-        shiki: {}
     }), mdx()],
     i18n: {
         locales: ["bn", "en"],
         defaultLocale: "en",
-    },
-    markdown: {
-        // syntaxHighlight: "shiki",
-        // shikiConfig: {
-        //     themes: {
-        //         light: "github-dark",
-        //         dark: "github-dark",
-        //     },
-        //     wrap: true,
-        // },
     },
 });
