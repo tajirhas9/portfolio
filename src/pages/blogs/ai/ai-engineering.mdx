@@ -1,0 +1,198 @@
+---
+layout: '../../../layouts/BlogLayout.astro'
+title: "AI Engineering: More focus on the \"Engineering\" than the \"AI\""
+author: "Syed Tajir Hasnain"
+date: 2026-10-05
+description: "When I first stepped into AI engineering, I was lost. I knew the concepts one by one but had no idea how they fit together into a real product. This blog walks through how a simple AI system grows as new problems show up. If you are starting out and wondering when you actually need which tool, I hope it gives you a way of thinking that makes those decisions easier."
+category: "AI"
+---
+
+When I first started exploring how software that uses AI is developed, I was a bit overwhelmed. I have a computer science background and did my undergrad final year thesis on Machine Learning and Deep Learning. So, I had a basic idea of transformers, encoder/decoder or how a deep learning model works in general. Working with AI software, I was expecting that there would be more to learn aside from deep learning focused things like PyTorch/Tensorflow, but I thought my knowledge of deep learning would help a lot.
+
+But, I was continuously getting exposed to terms like K/V Caching, Agents, Tool calling, RAG, prompt caching, context window and so on, which I never came across while training models. It all made sense separately, but now that I have these whole sets of new information, how do I use these things to make an AI Software? When do I need which one of these?
+
+After a lot of days grinding, I realized, I had been focusing too much on the "AI" part and much less on the "Engineering" part of the whole term. The LLM is just the "AI" part of the whole thing. Alone, it cannot do much. It just generates tokens from an input prompt, that is all. The whole engineering is focused on using this powerful LLM to solve some specific problem. Now, after realizing this, the whole idea broke down into 2 parts:
+
+1. Solving some specific problem
+2. with the help of AI
+
+Terms like Agents, Tool calling, RAG etc. are things that help on the first part, and the LLM only helps on the second part. Some of them, like K/V Caching, sit in between. They don't solve the problem for you, they just make running the "AI" part faster and cheaper.
+
+After having this change in perspective, my questions changed. Previously, I was asking when do I need RAG? When do I need tool calling? Now, I start from the problem instead. Say we sell a kitchen appliance that can make both coffee and tea, and we want an AI assistant that answers our customers' questions about it on our behalf.
+
+## How will the LLM know about our product?
+
+But how will the LLM know about our product? Okay, we need to provide the product manual in the prompt along with the question. So, our system became:
+
+import AiDiagramOne from '../../../components/diagrams/AiDiagramOne.vue'
+
+<AiDiagramOne client:load/>
+
+
+## Do we really send 100 pages with every question?
+
+But, new problems arise after this. Our product manual is 100 pages and we cannot load, or maybe should not load the entire product manual to the LLM for every query. Why? For one reason, it might become very slow. And for the other, it just doesn't feel right. So, what do we need now? Let's tackle the 2 issues one-by-one.
+
+### It might become very slow
+
+How can we keep it fast with all the information required? Here, we learn what **K/V cache** can do and how **prefix caching** can speed up response. Ok great, the inference engine can cache the Key and Value vectors of the tokens it already processed, so every new token it generates doesn't have to recompute them for all the previous tokens _(more on it <a href="https://huggingface.co/blog/not-lain/kv-caching" target="_blank">here</a>)_ and that saves a huge amount of re-calculation.
+
+But wait, this only helps while generating the answer. The engine still has to read through all 100 pages once before it can even produce the first token, and that is where most of the waiting is. On top of that, if our system prompt, which holds our product manual, seldom changes and always sits before the question, we can reuse its K/V cache across requests and skip that first read entirely, which is known as prefix caching _(more on it <a href="https://handbook.modular.com/inference-optimization/prefix-caching/" target="_blank">here</a>)_. Hosted LLM APIs offer the same idea under the name **prompt caching**. The catch is that the prefix has to be exactly the same every time, so if we put anything that changes, like today's date or the user's name, before the manual, the cache is gone. So, we might have indeed found a solution to the response latency!
+
+Well, mostly. Every new token still has to "look at" all those cached manual tokens, the cache eats a lot of GPU memory, and it can get evicted if no request hits it for a while. But it is good enough for now. Now the second part.
+
+### It just doesn't feel right
+
+100 pages is roughly 50-75k tokens, which fits comfortably in the context window of today's LLMs. So we are confident that we can feed our product manual to the system prompt. Great! But, is it practical? Does the LLM need the information on "how the product can serve you coffee" when the question user asked was "how can the product serve me tea?". Isn't it wasting computations? More GPU cost _(cloud)_ / electricity bill _(self hosted)_ from our pocket?
+
+And it is not only about money. The more irrelevant text we put in front of the LLM, the easier it gets distracted by it. LLMs are known to miss information buried in the middle of a long context _(see <a href="https://arxiv.org/abs/2307.03172" target="_blank">Lost in the Middle</a>)_. So the coffee section might actually make the tea answer worse!
+
+If somehow, we can strip the product manual to only provide what information is relevant to the question, won't it make the system more efficient? But, surely it will lose prefix caching for the manual part, since the parts change with every question. So, is the trade-off worth it? Not if we need 99 pages from the 100 page product manual, of course! But, in most cases, we might only need 1-2 pages of the product manual in practice for some question to be answered, right?
+
+To be fair, with prompt caching, cached tokens are billed at a fraction of the normal price. So, for a single 100 page manual, sending the whole thing with caching is a perfectly legit choice. But our business will not stay at one product forever. Add more products, FAQs and old support tickets, and soon no context window, cached or not, can hold it all.
+
+How can we solve this? This is where **RAG** comes in. What it does? Exactly what we were just thinking. We strip the manual into smaller parts. You can google and learn a lot about the thing itself, but in short, **RAG** is a method where, you do these once (indexing):
+
+1. chunk the product manual into small parts
+2. embed each chunk into a vector
+3. store those vectors in a vector db
+
+and these for every question:
+
+4. embed the question into a vector and run a similarity search over the vector db with it
+5. it returns the chunks that seem relevant to the question (retrieval)
+6. add those chunks to the prompt along with the question (augmentation)
+7. the LLM answers using that prompt (generation)
+
+Now, the LLM has only the information that "might be" relevant to the question. The prompt is a lot smaller, so fewer tokens to process and less money from our pocket. Sure, the retrieval step adds a bit of time on its own, but that is a trade-off we can live with. And we no longer need a huge context window. Who needs that for a simple question? Maybe to summarize One Piece, sure! So now, our system has one additional layer before the LLM that does RAG. You see, we are already moving away from a basic Q/A process. I mean, it still does Q/A. But, we are adding layers to the system aside from only LLM to solve our needs.
+
+import AiDiagramRAG from '../../../components/diagrams/AiDiagramRAG.vue'
+
+<AiDiagramRAG client:load />
+
+
+---
+
+## The LLM can't see our orders
+
+Okay! We have solved one problem: "How can we make the LLM answer questions related to our product?" That's already a success! More people are ordering our product because they are getting help a lot faster than a traditional call center or email-based customer service. But now, we are facing a new challenge! A lot of users are ordering our product and they keep asking the system what is the status of their order. But, our system is not built to answer that question. It only has access to the product manual, but it does not have access to our ordering database. The product manual was something that can be called an "unstructured document". We can embed it, run RAG and answer easily. But, our ordering DB is a relational database. And, we are not going to change it for this AI system. So, what do we do? How can we make this information available to the LLM? More importantly, how can we decide when the LLM needs this information? Too many questions. Again, let's break it down one-by-one:
+
+### How can we make this information available to the LLM?
+
+How do we retrieve this information from ordering DB generally? We have an API server that makes SQL queries to the DB and we hit that API server to retrieve that information. Can we do exactly that? Why not? We will make a function that will hit the API server, add that to the Augmented Prompt along with product manual and actual question, and feed it to the LLM. Problem solved, now the LLM has information of the status of the orders the user placed. Now the next question.
+
+### How can we decide when the LLM needs this information?
+
+Now, we have a function that can retrieve information from our ordering DB and feed it to the LLM, but the question is, is this information really needed to be in the prompt all the time? We need to remember that we are spending money for every input token we are feeding to the LLM. So, we have to be careful if we do not want to lose money that could have been saved by a few lines of code.
+
+You might say, "It is just one line of order status, what is the big deal?" Fair enough, if that was all. But our business grew. Now we also sell to cafes and hotels in bulk. A single hotel can have hundreds of orders with us. Each order has items, shipment tracking events, returns, refunds and invoices. And people do not only ask "where is my order?" anymore. One asks "Did I get refunded for the broken kettle from March?", another asks "Is the large coffee machine back in stock?". Before reading the question, we have no idea which order, which table or which API we need. If we fetch everything for every question, that is thousands of rows stuffed in the prompt, most of which are useless for the question, and stale within minutes since the orders and stock keep changing. Sounds familiar? It is the 100 page product manual problem all over again, only worse. But this time, RAG is not the right fit, because this data is structured, it keeps changing, and an exact lookup by order ID is far better than a "semantic" guess. What we really want is the LLM to read the question first and then ask for exactly the data it needs.
+
+It seems like, brilliant minds have already come up with a solution for this. They utilized the idea of a **feedback loop** to provide information to the LLM in real-time if some information is missing to answer the question. So, they trained the LLM to make structured response of some kind _(xml, json)_ when the LLM needs feedback from the outside environment. This structured response can be processed by the system to invoke some operation and feed it back to the LLM. This is what a **Tool Calling** is in a bird's-eye view. It is just a communication schema that we use to talk back-and-forth with the LLM. So, along with the prompt, we provide the LLM a list of operations that the system can do for it. The LLM then uses them when needed to fetch information in real-time as a feedback loop and answers question. Note that, the LLM never runs anything by itself. It only asks. Our system decides whether to run it, runs it, and sends the result back.
+
+Is it free? Of course not. The tool definitions are input tokens too, and they go with every request. And every tool call means one more round trip to the LLM with the whole conversation sent again. But a few hundred tokens of tool definitions and an extra round trip is nothing compared to stuffing thousands of rows of order data in every prompt. On the other hand, if it is one tiny piece of information that almost every question needs, just put it in the prompt. Tool calling is not a silver bullet, it is a trade-off like everything else in engineering.
+
+Since I called it a communication schema, let me illustrate an example on how it works:
+
+import AiDiagramToolCall from '../../../components/diagrams/AiDiagramToolCall.vue'
+
+<AiDiagramToolCall client:load />
+
+The system is looking more and more complex. Now, our system has:
+
+1. a RAG system for manual retrieval
+2. A stop-reason routing step where we decide if the LLM has finished responding or it just paused to ask for a tool as part of the feedback loop.
+3. A schema parsing mechanism. When the LLM sends us response back, we need to look into the `stop_reason`, if it is a `tool_use`, we need to parse the tool schema provided by the LLM and invoke the function that the tool expects. For example, when asked to use `get_order_status` tool, we invoke the function that calls the server API and retrieves order status from the ordering DB. Then, we feed it back to the LLM. 
+4. Finally, when we get `stop_reason = end_turn`, we can send the response back to the user.
+
+At this point, we can call our system _(minus the LLM)_ a harness, and the entire infrastructure _(system + LLM)_ an AI Agent. For more on what a harness or an agent is, you can read <a href="https://www.langchain.com/blog/the-anatomy-of-an-agent-harness" target="_blank">this beautiful blog from LangChain</a>.
+
+import AiDiagramGraph from '../../../components/diagrams/AiDiagramGraph.vue'
+
+<AiDiagramGraph client:load />
+
+## Implementation Guideline
+
+Now that we get the idea of when a system becomes a harness for an AI, we should know how to write code. Of course, we can just create a python program and use API calls to the LLM. We can create our own function that parses the tool schema and invokes the function. It is not hard. Remember, LLMs just generate tokens. Someone has to process those tokens to find the structured response and parse it.
+
+The good news is, if we use a hosted LLM API, that someone is usually not us. The provider parses the raw tokens on its side and hands us back a ready-made structured `tool_use` block. Inference servers like vLLM can do the same for self-hosted models with their tool parsers. Token-level parsing only becomes our job when we run a raw model ourselves. And it is not the same everywhere, every model family has its own tool calling format. But even with a structured block in hand, the rest is still ours: describing the tools, running the loop, invoking the right function and sending the result back. 
+
+That's where SDKs are powerful. They bundle these common use cases together, give us one abstraction over many providers so swapping the model does not mean rewriting the harness, and help us implement something faster without reinventing the wheel.
+
+<a href="https://docs.langchain.com/oss/python/langchain/overview" target="_blank">LangChain</a> is such an SDK that helps us handle tool calling, the agent loop and streaming tokens easily.
+
+Let's take an example from above that, the LLM sends us a structured response for calling `get_order_status` tool.
+
+```json
+// response generated by LLM
+{
+    "id": "t1",
+    "name": "get_order_status",
+    "input": {
+        "order_id": "4521"
+    }
+}
+```
+
+Here is the whole path from raw tokens to a tool result. The shaded part is what a hosted API already does for us. Everything else, we have to do by ourselves in a vanilla python program:
+
+import AiDiagramToolParse from '../../../components/diagrams/AiDiagramToolParse.vue'
+
+<AiDiagramToolParse client:load />
+
+And that is only the happy path. We have not even thought about what happens when the JSON is broken halfway, when the LLM asks for two tools in one turn, or when our function throws an error.
+
+Now, with LangChain, we can do this with a simple `@tool` decorator.
+
+```python
+import requests
+from langchain.tools import tool
+
+@tool
+def get_order_status(order_id: str) -> str:
+    """Get the current status of a customer's order.
+
+    Args:
+        order_id: The ID of the order, e.g. "4521".
+    """
+    response = requests.get(f"https://api.example.com/orders/{order_id}/status", timeout=5)
+    response.raise_for_status()
+    return response.json()["status"]
+```
+
+That's it. The decorator turns our plain function into a tool definition. The function name becomes the tool `name`, the type hints become the schema of the `input`, and the docstring becomes the tool `description`. 
+
+The only thing left to do is, we introduce the tool to the LLM: 
+
+```python
+from langchain.agents import create_agent
+
+agent = create_agent(
+    model="anthropic:claude-sonnet-5-5",
+    tools=[get_order_status],
+    system_prompt="You are a customer support assistant for our coffee and tea maker.",
+)
+
+result = agent.invoke(
+    {"messages": [{"role": "user", "content": "Where is my order #4521?"}]}
+)
+print(result["messages"][-1].content)
+```
+
+`create_agent` now sends the tool definitions with every request, watches the `stop_reason`, parses the `tool_use` block, invokes `get_order_status`, feeds the `tool_result` back to the LLM and keeps looping until it gets `end_turn`. The whole flowchart above, plus steps ②, ③ and ④ of our harness, in a few lines.
+
+Notice that step ① is missing, this agent knows nothing about our product manual yet. But look at it with our new eyes: searching the manual can be just another tool, say `search_manual`. Then the LLM decides when it actually needs to read the manual, instead of us running RAG for every question, even for "where is my order?".
+
+Now, you can start reading about LangChain from <a href="https://docs.langchain.com/oss/python/langchain/overview" target="_blank">their documentation</a> and eventually study <a href="https://docs.langchain.com/oss/python/langgraph/overview" target="_blank">LangGraph</a> and find how much easier it makes developing an agentic system. These SDKs are not mandatory for diving into AI Agent Development, but they make our lives easier and help us focus more on solving "our problem" instead of panicking on "The LLM broke the tool call halfway, what should I do?".
+
+And the journey does not stop here. Our customers will soon expect the assistant to remember what they said two messages ago (memory), we will want to know if the answers are actually good (evals), keep the assistant from saying things it shouldn't (guardrails), and see what went wrong when it does (observability). Each of those will show up the same way everything else did here, as a problem first.
+
+Welcome to the world of AI Agent Development!
+
+<script src="https://utteranc.es/client.js"
+        repo="tajirhas9/portfolio"
+        issue-number="6"
+        label="blog"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script>

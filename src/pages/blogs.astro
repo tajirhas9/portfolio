@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import NavBar from  '../components/NavBar.astro';
 import BlogList from '../components/BlogList.vue';
 
-let posts = Object.values(import.meta.glob('./blogs/*.{md,mdx}', { eager: true }))
+let posts = Object.values(import.meta.glob('./blogs/**/*.{md,mdx}', { eager: true }))
 ---
 
 <Layout>

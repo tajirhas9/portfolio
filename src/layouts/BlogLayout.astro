@@ -1,10 +1,12 @@
 ---
 import "../styles/global.css";
+import "katex/dist/katex.min.css";
 import NavBar from "../components/NavBar.astro";
 import { formatDate } from "../js/utils.js";
 
-const { frontmatter } = Astro.props;
+const { frontmatter, headings = [] } = Astro.props;
 const { title, description, date, author } = frontmatter;
+const toc = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 ---
 
 <!doctype html>
@@ -26,23 +28,96 @@ const { title, description, date, author } = frontmatter;
     </head>
     <body>
         <NavBar />
-        <div class="blog-header">
-            <p>{title}</p>
-            <p class="date">{formatDate(date)}</p>
+        <div class="blog-container">
+            <main>
+                <div class="blog-header">
+                    <p>{title}</p>
+                    <p class="date">{formatDate(date)}</p>
+                </div>
+                {
+                    toc.length > 0 && (
+                        <details class="toc toc-inline">
+                            <summary>Contents</summary>
+                            <ul>
+                                {toc.map((h) => (
+                                    <li class={`depth-${h.depth}`}>
+                                        <a href={`#${h.slug}`}>{h.text}</a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </details>
+                    )
+                }
+                <article>
+                    <slot />
+                </article>
+            </main>
+            {
+                toc.length > 0 && (
+                    <aside class="toc toc-side">
+                        <nav aria-label="Table of contents">
+                            <p class="toc-title">Contents</p>
+                            <ul>
+                                {toc.map((h) => (
+                                    <li class={`depth-${h.depth}`}>
+                                        <a href={`#${h.slug}`}>{h.text}</a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
+                    </aside>
+                )
+            }
         </div>
-        <article>
-            <slot />
-        </article>
+        <script>
+            const links = document.querySelectorAll<HTMLAnchorElement>(".toc a");
+            const inline = document.querySelector<HTMLDetailsElement>(".toc-inline");
+            inline?.querySelectorAll("a").forEach((a) =>
+                a.addEventListener("click", () => (inline.open = false)),
+            );
+
+            const headings = document.querySelectorAll("article h2[id], article h3[id]");
+            const setActive = (id: string) =>
+                links.forEach((a) =>
+                    a.classList.toggle("active", a.getAttribute("href") === `#${id}`),
+                );
+            const visible = new Set<Element>();
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    for (const e of entries) {
+                        if (e.isIntersecting) visible.add(e.target);
+                        else visible.delete(e.target);
+                    }
+                    // Topmost visible heading wins; otherwise keep last active.
+                    const first = [...headings].find((h) => visible.has(h));
+                    if (first) setActive(first.id);
+                },
+                { rootMargin: "0px 0px -70% 0px" },
+            );
+            headings.forEach((h) => observer.observe(h));
+        </script>
     </body>
 </html>
 
 <style>
+    html {
+        scroll-behavior: smooth;
+    }
     body {
         margin: 0;
         width: 100%;
         height: 100%;
         left: 0;
         top: 0;
+    }
+    .blog-container {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 50em) minmax(0, 1fr);
+        column-gap: 3em;
+    }
+    main {
+        grid-column: 2;
+        min-width: 0;
     }
     .blog-header {
         font-family: "BitterLocal", serif;
@@ -71,13 +146,119 @@ const { title, description, date, author } = frontmatter;
         font-size: 1em;
         line-height: 2.2;
     }
+    article :global(h2),
+    article :global(h3) {
+        scroll-margin-top: 1em;
+    }
+
+    /* Table of contents (shared) */
+    .toc {
+        font-family: "BitterLocal", serif;
+        color: var(--text-color);
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        li {
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+        li.depth-3 a {
+            padding-left: 1.8em;
+        }
+        a {
+            display: block;
+            padding: 0.3em 0 0.3em 0.8em;
+            border-left: 2px solid transparent;
+            color: light-dark(#777, #999);
+            text-decoration: none;
+            transition: color 0.15s, border-color 0.15s;
+        }
+        a:hover {
+            color: var(--text-color);
+        }
+        a.active {
+            color: var(--text-color);
+            border-left-color: var(--text-color);
+            font-weight: 600;
+        }
+    }
+
+    /* Desktop: sticky sidebar */
+    .toc-side {
+        grid-column: 3;
+        min-width: 0;
+        nav {
+            position: sticky;
+            top: 2em;
+            max-width: 18em;
+            max-height: calc(100vh - 4em);
+            overflow-y: auto;
+            margin-top: 2em;
+            font-size: 0.9em;
+            border-left: 1px solid var(--border);
+        }
+        .toc-title {
+            margin: 0 0 0.5em 0.8em;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #999;
+        }
+        a {
+            margin-left: -1px;
+        }
+    }
+
+    /* Smaller screens: collapsible block above article */
+    .toc-inline {
+        display: none;
+        max-width: 50em;
+        margin: 0 auto 1.5em;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        summary {
+            cursor: pointer;
+            padding: 0.75em 1em;
+            font-weight: 600;
+        }
+        ul {
+            padding: 0 1em 0.75em;
+        }
+        a {
+            padding-top: 0.6em;
+            padding-bottom: 0.6em;
+        }
+    }
+
+    @media screen and (max-width: 80em) {
+        .blog-container {
+            display: block;
+        }
+        .toc-side {
+            display: none;
+        }
+        .toc-inline {
+            display: block;
+        }
+    }
     @media screen and (max-width: 60em) {
         .blog-header {
             max-width: 90%;
         }
+        .toc-inline {
+            max-width: 90%;
+            font-size: 1.05em;
+        }
         article {
             font-size: 1.1em;
             max-width: 90%;
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
         }
     }
 </style>

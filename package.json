@@ -9,6 +9,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/markdown-remark": "^7.3.1",
     "@astrojs/mdx": "^8.0.2",
     "@astrojs/sitemap": "^3.7.4",
     "@astrojs/vue": "^7.0.3",
@@ -16,6 +17,10 @@
     "@expressive-code/plugin-line-numbers": "^0.44.2",
     "astro": "^7.3.5",
     "astro-expressive-code": "^0.44.2",
+    "d3": "^7.9.0",
+    "katex": "^0.19.0",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
     "vue": "^3.5.16"
   },
   "devDependencies": {
