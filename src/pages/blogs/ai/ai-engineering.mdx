@@ -37,7 +37,7 @@ But, new problems arise after this. Our product manual is 100 pages and we canno
 
 How can we keep it fast with all the information required? Here, we learn what **K/V cache** can do and how **prefix caching** can speed up response. Ok great, the inference engine can cache the Key and Value vectors of the tokens it already processed, so every new token it generates doesn't have to recompute them for all the previous tokens _(more on it <a href="https://huggingface.co/blog/not-lain/kv-caching" target="_blank">here</a>)_ and that saves a huge amount of re-calculation.
 
-But wait, this only helps while generating the answer. The engine still has to read through all 100 pages once before it can even produce the first token, and that is where most of the waiting is. On top of that, if our system prompt, which holds our product manual, seldom changes and always sits before the question, we can reuse its K/V cache across requests and skip that first read entirely, which is known as prefix caching _(more on it <a href="https://handbook.modular.com/inference-optimization/prefix-caching/" target="_blank">here</a>)_. Hosted LLM APIs offer the same idea under the name **prompt caching**. The catch is that the prefix has to be exactly the same every time, so if we put anything that changes, like today's date or the user's name, before the manual, the cache is gone. So, we might have indeed found a solution to the response latency!
+But wait, this only helps while generating the answer. The engine still has to read through all 100 pages once before it can even produce the first token, and that is where most of the waiting is. If our system prompt, which holds our product manual, seldom changes and always sits before the question, we can reuse its K/V cache across requests and skip that first read entirely, which is known as prefix caching _(more on it <a href="https://handbook.modular.com/inference-optimization/prefix-caching/" target="_blank">here</a>)_. So, we might have indeed found a solution to the response latency!
 
 Well, mostly. Every new token still has to "look at" all those cached manual tokens, the cache eats a lot of GPU memory, and it can get evicted if no request hits it for a while. But it is good enough for now. Now the second part.
 
@@ -51,7 +51,7 @@ If somehow, we can strip the product manual to only provide what information is 
 
 To be fair, with prompt caching, cached tokens are billed at a fraction of the normal price. So, for a single 100 page manual, sending the whole thing with caching is a perfectly legit choice. But our business will not stay at one product forever. Add more products, FAQs and old support tickets, and soon no context window, cached or not, can hold it all.
 
-How can we solve this? This is where **RAG** comes in. What it does? Exactly what we were just thinking. We strip the manual into smaller parts. You can google and learn a lot about the thing itself, but in short, **RAG** is a method where, you do these once (indexing):
+How can we solve this? This is where **RAG** comes in. What it does? Exactly what we were just thinking. We strip the manual into smaller parts. In short, **RAG** is a method where, you do these once (indexing):
 
 1. chunk the product manual into small parts
 2. embed each chunk into a vector
